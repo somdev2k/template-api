@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xsi:schemaLocation="  http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd  http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd  http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+  <!-- test to validate startup and imports -->
+  <!-- the flows-under-test api-alive and api-ready are imported from library apps-commons -->
+  <munit:config name="health-test-suite.xml"/>
+  <munit:test name="api-alive-happy-path-test" description="api-alive happy path">
+    <munit:execution>
+      <flow-ref name="api-alive" doc:name="api-alive"/>
+    </munit:execution>
+    <munit:validation>
+      <munit-tools:assert-equals actual="#[payload]" expected="#['UP']" doc:name="Payload is UP"/>
+    </munit:validation>
+  </munit:test>
+  <munit:test name="api-ready-happy-path-test" description="api-ready happy path">
+    <munit:execution>
+      <flow-ref name="api-ready" doc:name="api-ready"/>
+    </munit:execution>
+    <munit:validation>
+      <munit-tools:assert-equals actual="#[payload]" expected="#['UP']" doc:name="Payload is UP"/>
+    </munit:validation>
+  </munit:test>
+</mule>

@@ -1,0 +1,18 @@
+tls.keystore:
+  type:  "pkcs12"
+  path:  "certs/${project.artifactId}-test.p12" # replaced through Maven resource filtering
+  alias: "server"
+  
+jsonLogger:
+  prettyPrint: "true"
+  locationInfo: "false"
+  disabledFeilds:  "" #content
+  maskedFeilds:  ""
+
+cloudhub:
+  env.id: "dd8b4f3a-d97b-40e8-9aa0-9f01b1209513"
+  domain: "${app.name}" 
+
+# Autodiscovery API ID in API Manager in this environment
+api:
+  id: "15612809"

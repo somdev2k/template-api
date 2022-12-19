@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN" name="cloudhub" packages="com.mulesoft.ch.logging.appender">
+  <Appenders>
+    <RollingFile name="File" fileName="${sys:mule.home}${sys:file.separator}logs${sys:file.separator}${project.artifactId}.log" filePattern="${sys:mule.home}${sys:file.separator}logs${sys:file.separator}${project.artifactId}-%i.log">
+      <PatternLayout pattern="%-5p %d [%t] [%MDC] %c: %m%n"/>
+      <SizeBasedTriggeringPolicy size="10 MB"/>
+      <DefaultRolloverStrategy max="10"/>
+    </RollingFile>
+    <Log4J2CloudhubLogAppender name="CloudHub" addressProvider="com.mulesoft.ch.logging.DefaultAggregatorAddressProvider" applicationContext="com.mulesoft.ch.logging.DefaultApplicationContext" appendRetryIntervalMs="${sys:logging.appendRetryInterval}" appendMaxAttempts="${sys:logging.appendMaxAttempts}" batchSendIntervalMs="${sys:logging.batchSendInterval}" batchMaxRecords="${sys:logging.batchMaxRecords}" memBufferMaxSize="${sys:logging.memBufferMaxSize}" journalMaxWriteBatchSize="${sys:logging.journalMaxBatchSize}" journalMaxFileSize="${sys:logging.journalMaxFileSize}" clientMaxPacketSize="${sys:logging.clientMaxPacketSize}" clientConnectTimeoutMs="${sys:logging.clientConnectTimeout}" clientSocketTimeoutMs="${sys:logging.clientSocketTimeout}" serverAddressPollIntervalMs="${sys:logging.serverAddressPollInterval}" serverHeartbeatSendIntervalMs="${sys:logging.serverHeartbeatSendIntervalMs}" statisticsPrintIntervalMs="${sys:logging.statisticsPrintIntervalMs}">
+      <PatternLayout pattern="[%d{MM-dd HH:mm:ss}] %-5p %c{1} [%t] [%MDC]: %m%n"/>
+    </Log4J2CloudhubLogAppender>
+  </Appenders>
+  <Loggers>
+    <AsyncRoot level="INFO">
+      <AppenderRef ref="File"/>
+      <!-- Enable for CloudHub logging: https://docs.mulesoft.com/runtime-manager/custom-log-appender -->
+      <!-- <AppenderRef ref="CloudHub" /> -->
+    </AsyncRoot>
+    <AsyncLogger name="com.mulesoft.training" level="DEBUG"/>
+    <AsyncLogger name="org.mule.service.http" level="WARN"/>
+    <AsyncLogger name="org.mule.service.http.impl.service.HttpMessageLogger" level="INFO"/>
+    <AsyncLogger name="org.mule.extension.http" level="WARN"/>
+    <AsyncLogger name="com.mulesoft.extension.mq" level="INFO"/>
+    <AsyncLogger name="com.mulesoft.mq" level="INFO"/>
+    <AsyncLogger name="org.mule.extensions.vm" level="INFO"/>
+    <AsyncLogger name="com.mulesoft.mule.runtime.cache" level="DEBUG"/>
+    <!-- loggers: OOTB and API Policy -->
+    <AsyncLogger name="org.mule.runtime.core.internal.processor.LoggerMessageProcessor" level="INFO"/>
+    <AsyncLogger name="org.mule.runtime.logging" level="INFO"/>
+  </Loggers>
+</Configuration>

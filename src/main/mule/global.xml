@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns:cloudhub="http://www.mulesoft.org/schema/mule/cloudhub" xmlns:json-logger="http://www.mulesoft.org/schema/mule/json-logger" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:api-gateway="http://www.mulesoft.org/schema/mule/api-gateway" xmlns:tls="http://www.mulesoft.org/schema/mule/tls" xmlns:secure-properties="http://www.mulesoft.org/schema/mule/secure-properties" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="  http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd  http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd  http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd  http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd   http://www.mulesoft.org/schema/mule/secure-properties http://www.mulesoft.org/schema/mule/secure-properties/current/mule-secure-properties.xsd  http://www.mulesoft.org/schema/mule/tls http://www.mulesoft.org/schema/mule/tls/current/mule-tls.xsd  http://www.mulesoft.org/schema/mule/api-gateway http://www.mulesoft.org/schema/mule/api-gateway/current/mule-api-gateway.xsd  
+http://www.mulesoft.org/schema/mule/json-logger http://www.mulesoft.org/schema/mule/json-logger/current/mule-json-logger.xsd
+http://www.mulesoft.org/schema/mule/cloudhub http://www.mulesoft.org/schema/mule/cloudhub/current/mule-cloudhub.xsd">
+  <!-- Framework configurations - start  --> 
+  <import file="api-invocation-common.xml" doc:name="Import api-invocation-common.xml"/>
+  <global-property name="env" value="dev" doc:name="Default env to dev"/>
+  <!-- 1st def of a property is preserved, so env-dependent takes priority over env-independent -->
+  <configuration-properties file="${env}-properties.yaml" doc:name="Env Config Props"/>
+  <secure-properties:config file="${env}-secure-properties.yaml" key="${encrypt.key}" name="secureEnvPropsConfig" doc:name="Secure Env Config Props">
+    <secure-properties:encrypt algorithm="Blowfish"/>
+  </secure-properties:config>
+  <configuration-properties file="properties.yaml" doc:name="Config Props"/>
+  <tls:context name="apiTLSContext" doc:name="TLS Context">
+    <tls:key-store type="${tls.keystore.type}" path="${tls.keystore.path}" password="${secure::tls.keystore.password}" keyPassword="${secure::tls.keystore.keyPassword}" alias="${tls.keystore.alias}"/>
+  </tls:context>
+  <http:listener-config name="apiHttpListenerConfig">
+    <http:listener-connection host="0.0.0.0" protocol="HTTPS" port="${api.port}" tlsContext="apiTLSContext"/>
+  </http:listener-config>
+  <apikit:config name="apiConfig" api="${api.raml}" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus"/>
+  <api-gateway:autodiscovery apiId="${api.id}" flowRef="api-main" doc:name="API Autodiscovery"/>
+  <json-logger:config name="jsonLoggerConfig" doc:name="JSON Logger Config" doc:id="2e2eb623-3537-42f4-a0b7-2afde7e3be8c" applicationName="${app.name}" applicationVersion="${app.version}" disabledFields="${jsonLogger.disabledFeilds}" contentFieldsDataMasking="${jsonLogger.maskedFeilds}" environment="${env}" prettyPrint="${jsonLogger.prettyPrint}" logLocationInfo="${jsonLogger.locationInfo}"/>
+  <cloudhub:config name="cloudHubConfig" doc:name="CloudHub Config" doc:id="ab667450-bb74-473e-aec0-fadf53d83540" >
+	<cloudhub:connection username="${secure::cloudhub.user}" password="${secure::cloudhub.password}" environment="${cloudhub.env.id}" />
+  </cloudhub:config>
+  <!-- Framework configurations - end  --> 
+
+</mule>

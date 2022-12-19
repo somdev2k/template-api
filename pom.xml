@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>d3568c45-240a-431f-baa1-42ea631fcb88</groupId>
+		<artifactId>standalone-apps-parent-pom</artifactId>
+		<version>1.0.0</version>
+		<relativePath>../parent-pom/pom.xml</relativePath>
+	</parent>
+	<groupId>d3568c45-240a-431f-baa1-42ea631fcb88</groupId>
+	<artifactId>template-api</artifactId>
+	<version>1.0.0</version>
+	<packaging>mule-application</packaging>
+	<name>template-api</name>
+	<properties>
+		<!-- raw info for the API specification of the API exposed by this API implementation -->
+		<!-- expressed through properties defined in root parent POM (BOM) -->
+		<api.groupId>${template-api.groupId}</api.groupId>
+		<api.artifactId>${template-api.artifactId}-spec</api.artifactId>
+		<api.version>${template-api.version}</api.version>
+		<api.layer>${api.layer.none}</api.layer>
+	</properties>
+	<!-- all dependencies (without version!) that are specific to this Mule app (and hence not already defined in any parent POM): -->
+	<dependencies>
+		<!-- API specification of the API exposed by this API implementation -->
+		<!-- expressed through properties defined above -->
+		<dependency>
+			<groupId>${api.groupId}</groupId>
+			<artifactId>${api.artifactId}</artifactId>
+			<classifier>raml</classifier>
+			<type>zip</type>
+		</dependency>
+		<!-- limitation in Mule Maven tooling: must repeat from parent POM, and must do so before apikit! -->
+		<dependency>
+			<groupId>org.mule.connectors</groupId>
+			<artifactId>mule-http-connector</artifactId>
+			<classifier>mule-plugin</classifier>
+		</dependency>
+		<dependency>
+			<groupId>org.mule.modules</groupId>
+			<artifactId>mule-apikit-module</artifactId>
+			<classifier>mule-plugin</classifier>
+		</dependency>
+	</dependencies>
+</project>
