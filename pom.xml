@@ -5,7 +5,7 @@
 		<groupId>d3568c45-240a-431f-baa1-42ea631fcb88</groupId>
 		<artifactId>standalone-apps-parent-pom</artifactId>
 		<version>1.0.0</version>
-		<relativePath>../parent-pom/pom.xml</relativePath>
+		<relativePath/>
 	</parent>
 	<groupId>d3568c45-240a-431f-baa1-42ea631fcb88</groupId>
 	<artifactId>template-api</artifactId>

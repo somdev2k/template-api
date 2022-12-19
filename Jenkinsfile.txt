@@ -1,0 +1,36 @@
+pipeline {
+
+    agent any
+
+    environment {
+        DEPLOY_CREDS = credentials('cloudhub-deploy-creds')
+        PLATFORM_CREDS = credentials('anypoint-org-creds')
+        ENCRYPT_KEY = credentials('app-encrypt-key')
+		MVN_SET = credentials('mule-maven-settings')
+		GIT_URL = 'https://github.com/somdev2k/template-api.git'
+		GIT_BRANCH = '*/develop'
+    }
+
+    stages {
+	
+		stage('Checkout'){
+            steps {
+                echo 'Checkout .....'
+                checkout([$class: 'GitSCM', branches: [[name: "$GIT_BRANCH"]], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: 'github-creds', url: "$GIT_URL"]]])
+                sh "ls -lart ./*"
+            }
+        }
+        
+        stage('Build'){
+            steps {
+                echo 'Building .....'
+                echo env.GIT_BRANCH
+                sh 'mvn clean compile -U -s $MVN_SET'
+            }
+        }
+    }
+
+    tools {
+        maven 'Maven3'
+    }
+}
