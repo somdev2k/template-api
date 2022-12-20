@@ -1,9 +1,14 @@
 pipeline {
 
     agent any
+	
+	options {
+		timestamps()
+	}
 
     environment {
         GIT_URL = 'https://github.com/somdev2k/template-api.git'
+		BUILD_VER = '1.0.0'
         REPO_NAME = env.GIT_URL.replace('.git', '').split('/').last()
         DEPLOY_CREDS = credentials('cloudhub-deploy-creds')
         PLATFORM_CREDS = credentials('anypoint-org-creds')
@@ -40,6 +45,8 @@ pipeline {
 					env.GIT_AUTHOR_EMAIL  = sh (script: 'git log -1 --pretty=%ae ${GIT_COMMIT}', returnStdout: true).trim()
 				}
 				
+				env.BUILD_VER = readMavenPom().getVersion()
+				echo "BUILD_VER=${BUILD_VER}"
 				sh 'env | grep GIT_'
 				sh 'ls -lart ./*'
             }
@@ -64,7 +71,6 @@ pipeline {
             }
             steps {
                 echo 'Deploying in DEV/SIT...'
-
                 sh 'mvn clean deploy -DmuleDeploy -DskipMunitTests -Dap.ca.client_id="$DEPLOY_CREDS_USR" -Dap.ca.client_secret="$DEPLOY_CREDS_PSW" -Dap.client_id="$PLATFORM_CREDS_USR" -Dap.client_secret="$PLATFORM_CREDS_PSW" -Dencrypt.key="$ENCRYPT_KEY" -Ddeployment.env="$ENV"'
             }
         }
@@ -95,8 +101,7 @@ pipeline {
 					env.GIT_COMMIT_MSG = sh (script: 'git log -1 --pretty=%B ${GIT_COMMIT}', returnStdout: true).trim()
 					env.GIT_AUTHOR_NAME = sh (script: 'git log -1 --pretty=%an ${GIT_COMMIT}', returnStdout: true).trim()
 					env.GIT_AUTHOR_EMAIL  = sh (script: 'git log -1 --pretty=%ae ${GIT_COMMIT}', returnStdout: true).trim()
-				}
-				
+				}			
 				sh 'env | grep GIT_'
 				sh 'ls -lart ./*'
             }
@@ -107,7 +112,7 @@ pipeline {
                 expression {env.GIT_BRANCH == 'origin/main'}
             }
             steps {
-                echo 'Building ...'
+                echo 'Building ...'			
                 sh 'mvn clean verify -U -s $MVN_SET -Dencrypt.key="$ENCRYPT_KEY"'
             }
         }
@@ -121,7 +126,6 @@ pipeline {
             }
             steps {
                 echo 'Deploying in TEST/UAT...'
-
                 sh 'mvn clean deploy -DmuleDeploy -DskipMunitTests -Dap.ca.client_id="$DEPLOY_CREDS_USR" -Dap.ca.client_secret="$DEPLOY_CREDS_PSW" -Dap.client_id="$PLATFORM_CREDS_USR" -Dap.client_secret="$PLATFORM_CREDS_PSW" -Dencrypt.key="$ENCRYPT_KEY" -Ddeployment.env="$ENV"'
             }
         }
@@ -135,8 +139,7 @@ pipeline {
             }
             steps {
                 echo 'Running regression test...'
-
-                sh 'newman run $PWD/postman/$REPO_NAME.postman_collection.json --disable-unicode'
+                sh 'newman run $PWD/postman/$REPO_NAME.postman_collection.json --disable-unicode -r htmlextra --reporter-htmlextra-export $PWD/postman/ --reporter-htmlextra-darkTheme'
             }
         }
 
@@ -164,8 +167,7 @@ pipeline {
             }
             steps {
                 echo 'Deploying in PROD...'
-
-                sh 'mvn mule:deploy -Dmule.artifact=./target/template-api-1.0.0-mule-application.jar -Dap.ca.client_id="$DEPLOY_CREDS_USR" -Dap.ca.client_secret="$DEPLOY_CREDS_PSW" -Dap.client_id="$PLATFORM_CREDS_USR" -Dap.client_secret="$PLATFORM_CREDS_PSW" -Dencrypt.key="$ENCRYPT_KEY" -Ddeployment.env="$ENV" -Ddeployment.suffix='
+                sh 'mvn mule:deploy -Dmule.artifact=./target/template-api-"$BUILD_VER"-mule-application.jar -Dap.ca.client_id="$DEPLOY_CREDS_USR" -Dap.ca.client_secret="$DEPLOY_CREDS_PSW" -Dap.client_id="$PLATFORM_CREDS_USR" -Dap.client_secret="$PLATFORM_CREDS_PSW" -Dencrypt.key="$ENCRYPT_KEY" -Ddeployment.env="$ENV" -Ddeployment.suffix='
             }
         }
 
