@@ -46,13 +46,13 @@ pipeline {
 					env.BUILD_VER = sh (script: 'mvn help:evaluate -Dexpression=project.version -q -DforceStdout', returnStdout: true)
 				}
 
-				echo ================================================="
+				echo "================================================="
 				echo "GIT_COMMIT : $GIT_COMMIT "
 				echo "GIT_COMMIT_MSG : $GIT_COMMIT_MSG "
 				echo "GIT_AUTHOR_NAME : $GIT_AUTHOR_NAME "
 				echo "GIT_AUTHOR_EMAIL : $GIT_AUTHOR_EMAIL "
 				echo "BUILD_VER : $BUILD_VER "
-				echo ================================================="
+				echo "================================================="
 				
 				sh 'ls -lart ./*'
             }
@@ -110,13 +110,13 @@ pipeline {
 					env.BUILD_VER = sh (script: 'mvn help:evaluate -Dexpression=project.version -q -DforceStdout', returnStdout: true)
 				}			
 				
-				echo ================================================="
+				echo "================================================="
 				echo "GIT_COMMIT : $GIT_COMMIT "
 				echo "GIT_COMMIT_MSG : $GIT_COMMIT_MSG "
 				echo "GIT_AUTHOR_NAME : $GIT_AUTHOR_NAME "
 				echo "GIT_AUTHOR_EMAIL : $GIT_AUTHOR_EMAIL "
 				echo "BUILD_VER : $BUILD_VER "
-				echo ================================================="
+				echo "================================================="
 				
 				sh 'ls -lart ./*'
             }
