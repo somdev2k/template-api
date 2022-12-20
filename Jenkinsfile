@@ -16,7 +16,7 @@ pipeline {
 		
 		stage('Checkout - develop'){
 			when {
-                branch "*/develop"
+                expression {env.GIT_BRANCH == 'origin/develop'}
             }
             steps {
                 echo 'Checkout ...'
@@ -28,7 +28,7 @@ pipeline {
         
         stage('Build & UnitTest - develop'){
 			when {
-                branch "*/develop"
+               expression {env.GIT_BRANCH == 'origin/develop'}
             }
             steps {
                 echo 'Building ...'
@@ -39,7 +39,7 @@ pipeline {
 		
 		 stage('Deploying in DEV/SIT'){
             when {
-                branch "*/develop"
+                expression {env.GIT_BRANCH == 'origin/develop'}
             }
             environment {
                 ENV = 'dev'
