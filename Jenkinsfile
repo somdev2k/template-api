@@ -46,7 +46,7 @@ pipeline {
 					env.BUILD_VER = sh (script: 'mvn help:evaluate -Dexpression=project.version -q -DforceStdout', returnStdout: true)
 				}
 				
-				@echo off
+				echo off
 				echo "================================================="
 				echo "Build Summary"
 				echo "================================================="
@@ -56,6 +56,7 @@ pipeline {
 				echo "GIT_AUTHOR_EMAIL : $GIT_AUTHOR_EMAIL "
 				echo "BUILD_VER : $BUILD_VER "
 				echo "================================================="
+				echo on
 				
 				sh 'ls -lart ./*'
             }
@@ -113,7 +114,7 @@ pipeline {
 					env.BUILD_VER = sh (script: 'mvn help:evaluate -Dexpression=project.version -q -DforceStdout', returnStdout: true)
 				}			
 				
-				@echo off
+				echo off
 				echo "================================================="
 				echo "Build Summary"
 				echo "================================================="
@@ -123,6 +124,7 @@ pipeline {
 				echo "GIT_AUTHOR_EMAIL : $GIT_AUTHOR_EMAIL "
 				echo "BUILD_VER : $BUILD_VER "
 				echo "================================================="
+				echo on
 				
 				sh 'ls -lart ./*'
             }
