@@ -47,14 +47,13 @@ pipeline {
 				}
 								
 				echo "================================================="
-				echo "Build Kickoff"
+				echo " Initiating Build"
 				echo "================================================="
-				echo "GIT_COMMIT : $GIT_COMMIT "
-				echo "GIT_COMMIT_MSG : $GIT_COMMIT_MSG "
-				echo "GIT_AUTHOR_NAME : $GIT_AUTHOR_NAME "
-				echo "GIT_AUTHOR_EMAIL : $GIT_AUTHOR_EMAIL "
-				echo "BUILD_VER : $BUILD_VER "
-				echo "================================================="
+				echo "GIT_COMMIT = $GIT_COMMIT "
+				echo "GIT_COMMIT_MSG = $GIT_COMMIT_MSG "
+				echo "GIT_AUTHOR_NAME = $GIT_AUTHOR_NAME "
+				echo "GIT_AUTHOR_EMAIL = $GIT_AUTHOR_EMAIL "
+				echo "BUILD_VER = $BUILD_VER "
 				
 				sh 'ls -lart ./*'
             }
@@ -113,14 +112,13 @@ pipeline {
 				}			
 				
 				echo "================================================="
-				echo "Build Kickoff"
+				echo " Initiating Build"
 				echo "================================================="
-				echo "GIT_COMMIT : $GIT_COMMIT "
-				echo "GIT_COMMIT_MSG : $GIT_COMMIT_MSG "
-				echo "GIT_AUTHOR_NAME : $GIT_AUTHOR_NAME "
-				echo "GIT_AUTHOR_EMAIL : $GIT_AUTHOR_EMAIL "
-				echo "BUILD_VER : $BUILD_VER "
-				echo "================================================="
+				echo "GIT_COMMIT = $GIT_COMMIT "
+				echo "GIT_COMMIT_MSG = $GIT_COMMIT_MSG "
+				echo "GIT_AUTHOR_NAME = $GIT_AUTHOR_NAME "
+				echo "GIT_AUTHOR_EMAIL = $GIT_AUTHOR_EMAIL "
+				echo "BUILD_VER = $BUILD_VER "
 				
 				sh 'ls -lart ./*'
             }
