@@ -17,7 +17,7 @@ pipeline {
 		
 		stage('Checkout - develop'){
 			when {
-                expression {env.GIT_BRANCH == '*/develop'}
+                expression {env.GIT_BRANCH == 'origin/develop'}
             }
             steps {
                 echo 'Checkout ...'
@@ -30,7 +30,7 @@ pipeline {
         
         stage('Build & UnitTest - develop'){
 			when {
-               expression {env.GIT_BRANCH == '*/develop'}
+               expression {env.GIT_BRANCH == 'origin/develop'}
             }
             steps {
                 echo 'Building ...'
@@ -40,7 +40,7 @@ pipeline {
 		
 		 stage('Deploying in DEV/SIT'){
             when {
-                expression {env.GIT_BRANCH == '*/develop'}
+                expression {env.GIT_BRANCH == 'origin/develop'}
             }
             environment {
                 ENV = 'dev'
@@ -57,7 +57,7 @@ pipeline {
 		
 		stage('Checkout - main'){
 			when {
-                expression {env.GIT_BRANCH == '*/main'}
+                expression {env.GIT_BRANCH == 'origin/main'}
             }
             steps {
                 echo 'Checkout ...'
@@ -70,7 +70,7 @@ pipeline {
         
         stage('Build & UnitTest - main'){
 			when {
-                expression {env.GIT_BRANCH == '*/main'}
+                expression {env.GIT_BRANCH == 'origin/main'}
             }
             steps {
                 echo 'Building ...'
@@ -80,7 +80,7 @@ pipeline {
 		
 		 stage('Deploying in TEST/UAT'){
             when {
-                expression {env.GIT_BRANCH == '*/main'}
+                expression {env.GIT_BRANCH == 'origin/main'}
             }
             environment {
                 ENV = 'test'
@@ -106,7 +106,7 @@ pipeline {
 		
 		stage('Approve deployment on PROD') {
 			when {
-                expression {env.GIT_BRANCH == '*/main'}
+                expression {env.GIT_BRANCH == 'origin/main'}
             }
             steps {
                 timeout(time: 14, unit: 'DAYS') {
