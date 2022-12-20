@@ -8,6 +8,7 @@ pipeline {
         ENCRYPT_KEY = credentials('app-encrypt-key')
 		MVN_SET = credentials('mule-maven-settings')
 		GIT_URL = 'https://github.com/somdev2k/template-api.git'
+		REPO_NAME = env.GIT_URL.replace('.git', '').split('/').last()
     }
 
     stages {
@@ -99,7 +100,7 @@ pipeline {
             steps {
                 echo 'Running regression test...'
 
-				sh 'newman run $PWD/postman/template-api.postman_collection.json'
+				sh 'newman run $PWD/postman/$REPO_NAME.postman_collection.json --disable-unicode'
             }
         }
 		
