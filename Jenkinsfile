@@ -43,9 +43,8 @@ pipeline {
 					env.GIT_COMMIT_MSG = sh (script: 'git log -1 --pretty=%B ${GIT_COMMIT}', returnStdout: true).trim()
 					env.GIT_AUTHOR_NAME = sh (script: 'git log -1 --pretty=%an ${GIT_COMMIT}', returnStdout: true).trim()
 					env.GIT_AUTHOR_EMAIL  = sh (script: 'git log -1 --pretty=%ae ${GIT_COMMIT}', returnStdout: true).trim()
+					env.BUILD_VER = readMavenPom().getVersion()
 				}
-				
-				env.BUILD_VER = readMavenPom().getVersion()
 				echo "BUILD_VER=${BUILD_VER}"
 				sh 'env | grep GIT_'
 				sh 'ls -lart ./*'
