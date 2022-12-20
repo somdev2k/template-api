@@ -45,10 +45,9 @@ pipeline {
 					env.GIT_AUTHOR_EMAIL  = sh (script: 'git log -1 --pretty=%ae ${GIT_COMMIT}', returnStdout: true).trim()
 					env.BUILD_VER = sh (script: 'mvn help:evaluate -Dexpression=project.version -q -DforceStdout', returnStdout: true)
 				}
-				
-				echo off
+								
 				echo "================================================="
-				echo "Build Summary"
+				echo "Build Kickoff"
 				echo "================================================="
 				echo "GIT_COMMIT : $GIT_COMMIT "
 				echo "GIT_COMMIT_MSG : $GIT_COMMIT_MSG "
@@ -56,7 +55,6 @@ pipeline {
 				echo "GIT_AUTHOR_EMAIL : $GIT_AUTHOR_EMAIL "
 				echo "BUILD_VER : $BUILD_VER "
 				echo "================================================="
-				echo on
 				
 				sh 'ls -lart ./*'
             }
@@ -114,9 +112,8 @@ pipeline {
 					env.BUILD_VER = sh (script: 'mvn help:evaluate -Dexpression=project.version -q -DforceStdout', returnStdout: true)
 				}			
 				
-				echo off
 				echo "================================================="
-				echo "Build Summary"
+				echo "Build Kickoff"
 				echo "================================================="
 				echo "GIT_COMMIT : $GIT_COMMIT "
 				echo "GIT_COMMIT_MSG : $GIT_COMMIT_MSG "
@@ -124,7 +121,6 @@ pipeline {
 				echo "GIT_AUTHOR_EMAIL : $GIT_AUTHOR_EMAIL "
 				echo "BUILD_VER : $BUILD_VER "
 				echo "================================================="
-				echo on
 				
 				sh 'ls -lart ./*'
             }
@@ -201,7 +197,7 @@ pipeline {
             archiveArtifacts artifacts: 'target/*.jar, postman/*.html', fingerprint: true, onlyIfSuccessful: true
         }
 		success {
-          sh 'echo Release complete!'
+          sh 'echo Release complete!!'
         }
     }
 
