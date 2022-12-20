@@ -24,4 +24,4 @@ api:
   rootPath:     "" # for healthcheck endpoints, deployed to CH so no need
 
 messages:
-  hello-world: "Hello World!!"
+  hello-world: "Hello World-Test1"
