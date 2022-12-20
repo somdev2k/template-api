@@ -16,10 +16,11 @@ pipeline {
 		
 		stage('Checkout - develop'){
 			when {
-                expression {env.GIT_BRANCH == 'origin/develop'}
+                expression {env.GIT_BRANCH == '*/develop'}
             }
             steps {
                 echo 'Checkout ...'
+				echo env.GIT_BRANCH
                 checkout([$class: 'GitSCM', branches: [[name: "*/develop"]], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: 'github-creds', url: "$GIT_URL"]]])
                 
 				sh 'ls -lart ./*'
@@ -28,18 +29,17 @@ pipeline {
         
         stage('Build & UnitTest - develop'){
 			when {
-               expression {env.GIT_BRANCH == 'origin/develop'}
+               expression {env.GIT_BRANCH == '*/develop'}
             }
             steps {
                 echo 'Building ...'
-                echo env.GIT_BRANCH
                 sh 'mvn clean verify -U -s $MVN_SET -Dencrypt.key="$ENCRYPT_KEY"'
             }
         }
 		
 		 stage('Deploying in DEV/SIT'){
             when {
-                expression {env.GIT_BRANCH == 'origin/develop'}
+                expression {env.GIT_BRANCH == '*/develop'}
             }
             environment {
                 ENV = 'dev'
@@ -56,10 +56,11 @@ pipeline {
 		
 		stage('Checkout - main'){
 			when {
-                branch "main"
+                expression {env.GIT_BRANCH == '*/main'}
             }
             steps {
                 echo 'Checkout ...'
+				echo env.GIT_BRANCH
                 checkout([$class: 'GitSCM', branches: [[name: "*/main"]], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: 'github-creds', url: "$GIT_URL"]]])
                 
 				sh 'ls -lart ./*'
@@ -68,18 +69,17 @@ pipeline {
         
         stage('Build & UnitTest - main'){
 			when {
-                branch "main"
+                expression {env.GIT_BRANCH == '*/main'}
             }
             steps {
                 echo 'Building ...'
-                echo env.GIT_BRANCH
                 sh 'mvn clean verify -U -s $MVN_SET -Dencrypt.key="$ENCRYPT_KEY"'
             }
         }
 		
 		 stage('Deploying in TEST/UAT'){
             when {
-                branch "main"
+                expression {env.GIT_BRANCH == '*/main'}
             }
             environment {
                 ENV = 'test'
@@ -91,9 +91,21 @@ pipeline {
             }
         }
 		
+		stage('Regression Testing'){
+            
+            environment {
+                ENV = 'test'
+            }
+            steps {
+                echo 'Running regression test...'
+
+				sh 'newman run $PWD/postman/template-api.postman_collection.json'
+            }
+        }
+		
 		stage('Approve deployment on PROD') {
 			when {
-                branch "main"
+                expression {env.GIT_BRANCH == '*/main'}
             }
             steps {
                 timeout(time: 14, unit: 'DAYS') {

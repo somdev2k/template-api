@@ -1,0 +1,38 @@
+{
+	"info": {
+		"_postman_id": "d43afb9b-ab05-4976-982a-8d7578cd313c",
+		"name": "template-api",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "hello-world",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "x-correlation-id",
+						"value": "{{$guid}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "https://iocl-nfr-template-api-dev.us-e2.cloudhub.io/api/v1/hello-world",
+					"protocol": "https",
+					"host": [
+						"iocl-nfr-template-api-dev",
+						"us-e2",
+						"cloudhub",
+						"io"
+					],
+					"path": [
+						"api",
+						"v1",
+						"hello-world"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
