@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN">
+  <Appenders>
+    <Console name="Console" target="SYSTEM_OUT">
+      <PatternLayout pattern="%-5p %d [%t] %c: %m%n"/>
+    </Console>
+  </Appenders>
+  <Loggers>
+    <Root level="INFO">
+      <AppenderRef ref="Console"/>
+    </Root>
+    <Logger name="com.mulesoft.training" level="INFO"/>
+    <Logger name="org.mule.service.http" level="WARN"/>
+    <Logger name="org.mule.service.http.impl.service.HttpMessageLogger" level="DEBUG"/>
+    <Logger name="org.mule.extension.http" level="WARN"/>
+    <Logger name="com.mulesoft.extension.mq" level="DEBUG"/>
+    <Logger name="com.mulesoft.mq" level="DEBUG"/>
+    <Logger name="org.mule.extensions.vm" level="DEBUG"/>
+    <!-- loggers: OOTB and API Policy -->
+    <Logger name="org.mule.runtime.core.internal.processor.LoggerMessageProcessor" level="DEBUG"/>
+    <Logger name="org.mule.runtime.logging" level="DEBUG"/>
+  </Loggers>
+</Configuration>

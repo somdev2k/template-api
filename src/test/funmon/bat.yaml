@@ -1,0 +1,8 @@
+suite:
+  name: ${project.artifactId}-funmon
+files:
+  - file: tests/health-checks.dwl
+reporters:
+  - type: Slack
+    options:
+      SLACK_WEBHOOK: %SLACK_WEBHOOK_URL%

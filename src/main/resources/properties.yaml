@@ -1,0 +1,27 @@
+# All environments are configured for deployment to CH
+encrypt:
+  key: "to-be-given-at-runtime"
+
+# Client ID and Secret for this Anypoint Platform (for all environments): to register with API Manager via autodiscovery
+anypoint.platform:
+  client_id:     "to-be-given-at-runtime"
+  client_secret: "to-be-given-at-runtime"
+
+anypoint.platform.visualizer.layer: ${api.layer} # replaced through Maven resource filtering
+
+app:
+  name:    ${project.artifactId} # replaced through Maven resource filtering
+  version: ${project.version}    # replaced through Maven resource filtering
+
+api:
+  groupId:      "${api.groupId}"    # replaced through Maven resource filtering
+  artifactId:   "${api.artifactId}" # replaced through Maven resource filtering
+  version:      "${api.version}"    # replaced through Maven resource filtering
+  ramlFile:     "${api.artifactId}.raml"
+  raml:         "resource::${api.groupId}:${api.artifactId}:${api.version}:raml:zip:${api.ramlFile}"
+  majorVersion: "v1"
+  port:         "8082"
+  rootPath:     "" # for healthcheck endpoints, deployed to CH so no need
+
+messages:
+  hello-world: "Hello World!!"
