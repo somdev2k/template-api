@@ -45,7 +45,10 @@ pipeline {
 					env.GIT_AUTHOR_EMAIL  = sh (script: 'git log -1 --pretty=%ae ${GIT_COMMIT}', returnStdout: true).trim()
 					env.BUILD_VER = sh (script: 'mvn help:evaluate -Dexpression=project.version -q -DforceStdout', returnStdout: true)
 				}
-
+				
+				@echo off
+				echo "================================================="
+				echo "Build Summary"
 				echo "================================================="
 				echo "GIT_COMMIT : $GIT_COMMIT "
 				echo "GIT_COMMIT_MSG : $GIT_COMMIT_MSG "
@@ -110,6 +113,9 @@ pipeline {
 					env.BUILD_VER = sh (script: 'mvn help:evaluate -Dexpression=project.version -q -DforceStdout', returnStdout: true)
 				}			
 				
+				@echo off
+				echo "================================================="
+				echo "Build Summary"
 				echo "================================================="
 				echo "GIT_COMMIT : $GIT_COMMIT "
 				echo "GIT_COMMIT_MSG : $GIT_COMMIT_MSG "
