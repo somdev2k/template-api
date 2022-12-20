@@ -14,14 +14,13 @@ pipeline {
     stages {
 	
 		// release pipeline for develop branch
-		
+		/*
 		stage('Checkout - develop'){
 			when {
                 expression {env.GIT_BRANCH == 'origin/develop'}
             }
             steps {
-                echo 'Checkout ...'
-				echo env.GIT_BRANCH
+                echo 'Checkout develop...'
                 checkout([$class: 'GitSCM', branches: [[name: "*/develop"]], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: 'github-creds', url: "$GIT_URL"]]])
                 
 				sh 'ls -lart ./*'
@@ -51,7 +50,7 @@ pipeline {
 				sh 'mvn clean deploy -DmuleDeploy -DskipMunitTests -Dap.ca.client_id="$DEPLOY_CREDS_USR" -Dap.ca.client_secret="$DEPLOY_CREDS_PSW" -Dap.client_id="$PLATFORM_CREDS_USR" -Dap.client_secret="$PLATFORM_CREDS_PSW" -Dencrypt.key="$ENCRYPT_KEY" -Ddeployment.env="$ENV"'
             }
         }
-		
+		*/
 		
 		// release pipeline for main branch
 		
@@ -60,8 +59,7 @@ pipeline {
                 expression {env.GIT_BRANCH == 'origin/main'}
             }
             steps {
-                echo 'Checkout ...'
-				echo env.GIT_BRANCH
+                echo 'Checkout main...'
                 checkout([$class: 'GitSCM', branches: [[name: "*/main"]], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: 'github-creds', url: "$GIT_URL"]]])
                 
 				sh 'ls -lart ./*'
@@ -93,14 +91,16 @@ pipeline {
         }
 		
 		stage('Regression Testing'){
-            
+            when {
+                expression {env.GIT_BRANCH == 'origin/main'}
+            }
             environment {
                 ENV = 'test'
             }
             steps {
                 echo 'Running regression test...'
 
-				sh 'newman run $PWD/postman/$REPO_NAME.postman_collection.json --disable-unicode'
+				sh 'newman run $PWD/postman/$REPO_NAME.postman_collection.json --disable-unicode -r htmlextra --reporter-htmlextra-export $PWD/postman/ --reporter-htmlextra-darkTheme'
             }
         }
 		
