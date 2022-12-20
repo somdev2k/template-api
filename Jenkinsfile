@@ -12,7 +12,8 @@ pipeline {
 
     stages {
 	
-		// release pipeline for develop
+		// release pipeline for develop branch
+		
 		stage('Checkout - develop'){
 			when {
                 branch "develop"
@@ -25,7 +26,7 @@ pipeline {
             }
         }
         
-        stage('Build & UnitTest'){
+        stage('Build & UnitTest - develop'){
 			when {
                 branch "develop"
             }
@@ -51,7 +52,7 @@ pipeline {
         }
 		
 		
-		// release pipeline for main
+		// release pipeline for main branch
 		
 		stage('Checkout - main'){
 			when {
@@ -65,7 +66,7 @@ pipeline {
             }
         }
         
-        stage('Build & UnitTest'){
+        stage('Build & UnitTest - main'){
 			when {
                 branch "main"
             }
