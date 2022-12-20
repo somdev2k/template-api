@@ -8,6 +8,7 @@ pipeline {
         ENCRYPT_KEY = credentials('app-encrypt-key')
 		MVN_SET = credentials('mule-maven-settings')
 		GIT_URL = 'https://github.com/somdev2k/template-api.git'
+		REPO_NAME = env.GIT_URL.replace('.git', '').split('/').last()
     }
 
     stages {
@@ -16,10 +17,11 @@ pipeline {
 		
 		stage('Checkout - develop'){
 			when {
-                branch "develop"
+                expression {env.GIT_BRANCH == '*/develop'}
             }
             steps {
                 echo 'Checkout ...'
+				echo env.GIT_BRANCH
                 checkout([$class: 'GitSCM', branches: [[name: "*/develop"]], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: 'github-creds', url: "$GIT_URL"]]])
                 
 				sh 'ls -lart ./*'
@@ -28,18 +30,17 @@ pipeline {
         
         stage('Build & UnitTest - develop'){
 			when {
-                branch "develop"
+               expression {env.GIT_BRANCH == '*/develop'}
             }
             steps {
                 echo 'Building ...'
-                echo env.GIT_BRANCH
                 sh 'mvn clean verify -U -s $MVN_SET -Dencrypt.key="$ENCRYPT_KEY"'
             }
         }
 		
 		 stage('Deploying in DEV/SIT'){
             when {
-                branch "develop"
+                expression {env.GIT_BRANCH == '*/develop'}
             }
             environment {
                 ENV = 'dev'
@@ -56,10 +57,11 @@ pipeline {
 		
 		stage('Checkout - main'){
 			when {
-                branch "main"
+                expression {env.GIT_BRANCH == '*/main'}
             }
             steps {
                 echo 'Checkout ...'
+				echo env.GIT_BRANCH
                 checkout([$class: 'GitSCM', branches: [[name: "*/main"]], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: 'github-creds', url: "$GIT_URL"]]])
                 
 				sh 'ls -lart ./*'
@@ -68,18 +70,17 @@ pipeline {
         
         stage('Build & UnitTest - main'){
 			when {
-                branch "main"
+                expression {env.GIT_BRANCH == '*/main'}
             }
             steps {
                 echo 'Building ...'
-                echo env.GIT_BRANCH
                 sh 'mvn clean verify -U -s $MVN_SET -Dencrypt.key="$ENCRYPT_KEY"'
             }
         }
 		
 		 stage('Deploying in TEST/UAT'){
             when {
-                branch "main"
+                expression {env.GIT_BRANCH == '*/main'}
             }
             environment {
                 ENV = 'test'
@@ -91,9 +92,21 @@ pipeline {
             }
         }
 		
+		stage('Regression Testing'){
+            
+            environment {
+                ENV = 'test'
+            }
+            steps {
+                echo 'Running regression test...'
+
+				sh 'newman run $PWD/postman/$REPO_NAME.postman_collection.json --disable-unicode'
+            }
+        }
+		
 		stage('Approve deployment on PROD') {
 			when {
-                branch "main"
+                expression {env.GIT_BRANCH == '*/main'}
             }
             steps {
                 timeout(time: 14, unit: 'DAYS') {
@@ -116,7 +129,7 @@ pipeline {
             steps {
                 echo 'Deploying in PROD...'
 
-                sh 'mvn mule:deploy -Dmule.artifact=./target/template-api-*-mule-application.jar -Dap.ca.client_id="$DEPLOY_CREDS_USR" -Dap.ca.client_secret="$DEPLOY_CREDS_PSW" -Dap.client_id="$PLATFORM_CREDS_USR" -Dap.client_secret="$PLATFORM_CREDS_PSW" -Dencrypt.key="$ENCRYPT_KEY" -Ddeployment.env="$ENV" -Ddeployment.suffix='
+                sh 'mvn mule:deploy -Dmule.artifact=./target/template-api-1.0.0-mule-application.jar -Dap.ca.client_id="$DEPLOY_CREDS_USR" -Dap.ca.client_secret="$DEPLOY_CREDS_PSW" -Dap.client_id="$PLATFORM_CREDS_USR" -Dap.client_secret="$PLATFORM_CREDS_PSW" -Dencrypt.key="$ENCRYPT_KEY" -Ddeployment.env="$ENV" -Ddeployment.suffix='
             }
         }
         
