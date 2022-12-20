@@ -43,10 +43,17 @@ pipeline {
 					env.GIT_COMMIT_MSG = sh (script: 'git log -1 --pretty=%B ${GIT_COMMIT}', returnStdout: true).trim()
 					env.GIT_AUTHOR_NAME = sh (script: 'git log -1 --pretty=%an ${GIT_COMMIT}', returnStdout: true).trim()
 					env.GIT_AUTHOR_EMAIL  = sh (script: 'git log -1 --pretty=%ae ${GIT_COMMIT}', returnStdout: true).trim()
-					env.BUILD_VER = readMavenPom().getVersion()
+					env.BUILD_VER = sh (script: 'mvn help:evaluate -Dexpression=project.version -q -DforceStdout', returnStdout: true)
 				}
-				echo "BUILD_VER=${BUILD_VER}"
-				sh 'env | grep GIT_'
+
+				echo "####################################"
+				echo "### GIT_COMMIT : $GIT_COMMIT "
+				echo "### GIT_COMMIT_MSG : $GIT_COMMIT_MSG "
+				echo "### GIT_AUTHOR_NAME : $GIT_AUTHOR_NAME "
+				echo "### GIT_AUTHOR_EMAIL : $GIT_AUTHOR_EMAIL "
+				echo "### BUILD_VER : $BUILD_VER "
+				echo "####################################"
+				
 				sh 'ls -lart ./*'
             }
         }
@@ -100,8 +107,17 @@ pipeline {
 					env.GIT_COMMIT_MSG = sh (script: 'git log -1 --pretty=%B ${GIT_COMMIT}', returnStdout: true).trim()
 					env.GIT_AUTHOR_NAME = sh (script: 'git log -1 --pretty=%an ${GIT_COMMIT}', returnStdout: true).trim()
 					env.GIT_AUTHOR_EMAIL  = sh (script: 'git log -1 --pretty=%ae ${GIT_COMMIT}', returnStdout: true).trim()
+					env.BUILD_VER = sh (script: 'mvn help:evaluate -Dexpression=project.version -q -DforceStdout', returnStdout: true)
 				}			
-				sh 'env | grep GIT_'
+				
+				echo "####################################"
+				echo "### GIT_COMMIT : $GIT_COMMIT "
+				echo "### GIT_COMMIT_MSG : $GIT_COMMIT_MSG "
+				echo "### GIT_AUTHOR_NAME : $GIT_AUTHOR_NAME "
+				echo "### GIT_AUTHOR_EMAIL : $GIT_AUTHOR_EMAIL "
+				echo "### BUILD_VER : $BUILD_VER "
+				echo "####################################"
+				
 				sh 'ls -lart ./*'
             }
         }
