@@ -16,7 +16,6 @@ pipeline {
         PLATFORM_CREDS = credentials('anypoint-org-creds')
         ENCRYPT_KEY = credentials('app-encrypt-key')
         MVN_SET = credentials('mule-maven-settings')
-		ENV = '' 
     }
 
     stages {
@@ -31,6 +30,7 @@ pipeline {
             }
             steps {
 				echo 'Checkout develop...'
+				
 				checkout([$class: 'GitSCM', 
 						branches: [[name: "*/develop"]], 
 						doGenerateSubmoduleConfigurations: false, 
@@ -71,7 +71,8 @@ pipeline {
             }
             steps {
                 echo 'Building ...'
-                sh 'mvn clean verify -U -s $MVN_SET -Dencrypt.key="$ENCRYPT_KEY"'
+                
+				sh 'mvn clean verify -U -s $MVN_SET -Dencrypt.key="$ENCRYPT_KEY"'
             }
         }
 
@@ -81,7 +82,8 @@ pipeline {
             }
             steps {
                 echo 'Deploying in DEV/SIT...'
-                sh 'mvn clean deploy -DmuleDeploy -DskipMunitTests -Dap.ca.client_id="$DEPLOY_CREDS_USR" -Dap.ca.client_secret="$DEPLOY_CREDS_PSW" -Dap.client_id="$PLATFORM_CREDS_USR" -Dap.client_secret="$PLATFORM_CREDS_PSW" -Dencrypt.key="$ENCRYPT_KEY" -Ddeployment.env="$GB_ENV"'
+                
+				sh 'mvn clean deploy -DmuleDeploy -DskipMunitTests -Dap.ca.client_id="$DEPLOY_CREDS_USR" -Dap.ca.client_secret="$DEPLOY_CREDS_PSW" -Dap.client_id="$PLATFORM_CREDS_USR" -Dap.client_secret="$PLATFORM_CREDS_PSW" -Dencrypt.key="$ENCRYPT_KEY" -Ddeployment.env="$GB_ENV"'
             }
         }
 
@@ -96,6 +98,7 @@ pipeline {
             }
             steps {
 				echo 'Checkout main...'
+				
 				checkout([$class: 'GitSCM', 
 						branches: [[name: "*/main"]], 
 						doGenerateSubmoduleConfigurations: false, 
@@ -136,7 +139,8 @@ pipeline {
             }
             steps {
                 echo 'Building ...'			
-                sh 'mvn clean verify -U -s $MVN_SET -Dencrypt.key="$ENCRYPT_KEY"'
+                
+				sh 'mvn clean verify -U -s $MVN_SET -Dencrypt.key="$ENCRYPT_KEY"'
             }
         }
 
@@ -146,7 +150,8 @@ pipeline {
             }
             steps {
                 echo 'Deploying in TEST/UAT...'
-                sh 'mvn clean deploy -DmuleDeploy -DskipMunitTests -Dap.ca.client_id="$DEPLOY_CREDS_USR" -Dap.ca.client_secret="$DEPLOY_CREDS_PSW" -Dap.client_id="$PLATFORM_CREDS_USR" -Dap.client_secret="$PLATFORM_CREDS_PSW" -Dencrypt.key="$ENCRYPT_KEY" -Ddeployment.env="$GB_ENV"'
+                
+				sh 'mvn clean deploy -DmuleDeploy -DskipMunitTests -Dap.ca.client_id="$DEPLOY_CREDS_USR" -Dap.ca.client_secret="$DEPLOY_CREDS_PSW" -Dap.client_id="$PLATFORM_CREDS_USR" -Dap.client_secret="$PLATFORM_CREDS_PSW" -Dencrypt.key="$ENCRYPT_KEY" -Ddeployment.env="$GB_ENV"'
             }
         }
 
@@ -156,7 +161,8 @@ pipeline {
             }
             steps {
                 echo 'Running regression test...'
-                sh 'newman run $PWD/postman/$REPO_NAME.postman_collection.json --disable-unicode -r htmlextra --reporter-htmlextra-export $PWD/postman/ --reporter-htmlextra-darkTheme'
+                
+				sh 'newman run $PWD/postman/$REPO_NAME.postman_collection.json --disable-unicode -r htmlextra --reporter-htmlextra-export $PWD/postman/ --reporter-htmlextra-darkTheme'
             }
         }
 
@@ -182,12 +188,14 @@ pipeline {
 		stage('Tagging') {
             when {
                 environment name: 'DEPLOY_PROD', value: "true"
-            }
-            script {
-				GB_ENV = sh (script: 'echo prod', returnStdout: true).trim()	
-			}	
+            } 
             steps {
                 echo 'Tagging main branch...'
+				
+				script {
+					GB_ENV = sh (script: 'echo prod', returnStdout: true).trim()	
+				}	
+				
             }
         }
 
@@ -197,7 +205,8 @@ pipeline {
             }
             steps {
                 echo 'Deploying in PROD...'
-                sh 'mvn mule:deploy -Dmule.artifact=./target/template-api-"$BUILD_VER"-mule-application.jar -Dap.ca.client_id="$DEPLOY_CREDS_USR" -Dap.ca.client_secret="$DEPLOY_CREDS_PSW" -Dap.client_id="$PLATFORM_CREDS_USR" -Dap.client_secret="$PLATFORM_CREDS_PSW" -Dencrypt.key="$ENCRYPT_KEY" -Ddeployment.env="$GB_ENV" -Ddeployment.suffix='
+                
+				sh 'mvn mule:deploy -Dmule.artifact=./target/template-api-"$BUILD_VER"-mule-application.jar -Dap.ca.client_id="$DEPLOY_CREDS_USR" -Dap.ca.client_secret="$DEPLOY_CREDS_PSW" -Dap.client_id="$PLATFORM_CREDS_USR" -Dap.client_secret="$PLATFORM_CREDS_PSW" -Dencrypt.key="$ENCRYPT_KEY" -Ddeployment.env="$GB_ENV" -Ddeployment.suffix='
             }
         }
 
