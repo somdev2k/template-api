@@ -14,6 +14,7 @@ pipeline {
         PLATFORM_CREDS = credentials('anypoint-org-creds')
         ENCRYPT_KEY = credentials('app-encrypt-key')
         MVN_SET = credentials('mule-maven-settings')
+		ENV = '' 
     }
 
     stages {
@@ -39,6 +40,7 @@ pipeline {
 						])
 				
 				script {
+					env.ENV = 'dev'
 					env.GIT_COMMIT = sh(returnStdout: true, script: 'git rev-parse HEAD')
 					env.GIT_COMMIT_MSG = sh (script: 'git log -1 --pretty=%B ${GIT_COMMIT}', returnStdout: true).trim()
 					env.GIT_AUTHOR_NAME = sh (script: 'git log -1 --pretty=%an ${GIT_COMMIT}', returnStdout: true).trim()
@@ -49,11 +51,13 @@ pipeline {
 				echo "================================================="
 				echo " Initiating Build"
 				echo "================================================="
-				echo "GIT_COMMIT = $GIT_COMMIT "
-				echo "GIT_COMMIT_MSG = $GIT_COMMIT_MSG "
-				echo "GIT_AUTHOR_NAME = $GIT_AUTHOR_NAME "
-				echo "GIT_AUTHOR_EMAIL = $GIT_AUTHOR_EMAIL "
-				echo "BUILD_VER = $BUILD_VER "
+				echo " ENV : 				$ENV "
+				echo " GIT_COMMIT : 		$GIT_COMMIT "
+				echo " GIT_COMMIT_MSG : 	$GIT_COMMIT_MSG "
+				echo " GIT_AUTHOR_NAME : 	$GIT_AUTHOR_NAME "
+				echo " GIT_AUTHOR_EMAIL : 	$GIT_AUTHOR_EMAIL "
+				echo " BUILD_VER : 			$BUILD_VER "
+				echo "================================================="
 				
 				sh 'ls -lart ./*'
             }
