@@ -68,7 +68,7 @@ pipeline {
             steps {
                 echo 'Building ...'
                 
-				sh 'mvn clean verify -U -s $MVN_SET -Dencrypt.key="$ENCRYPT_KEY"'
+				sh 'mvn clean verify -U -s $MVN_SET -Dencrypt.key="$ENCRYPT_KEY" -Pcicd'
             }
         }
 		
@@ -137,7 +137,7 @@ pipeline {
             steps {
                 echo 'Building ...'			
                 
-				sh 'mvn clean verify -U -s $MVN_SET -Dencrypt.key="$ENCRYPT_KEY"'
+				sh 'mvn clean verify -U -s $MVN_SET -Dencrypt.key="$ENCRYPT_KEY" -Pcicd'
             }
         }
 
@@ -229,3 +229,11 @@ pipeline {
         jdk 'JDK8'
     }
 }
+
+/*
+*Plugins installed:
+*-Simple Theme Plugin
+*-GitHub Integration Plugin
+*-Build Pipeline Plugin
+*
+*/
