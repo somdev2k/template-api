@@ -13,7 +13,6 @@ pipeline {
         DEPLOY_CREDS = credentials('cloudhub-deploy-creds')
         PLATFORM_CREDS = credentials('anypoint-org-creds')
         ENCRYPT_KEY = credentials('app-encrypt-key')
-        MVN_SET = credentials('mule-maven-settings')
 		GB_ENV = ""
     }
 
@@ -68,7 +67,7 @@ pipeline {
             steps {
                 echo 'Building ...'
                 
-				sh 'mvn clean verify -U -s $MVN_SET -Dencrypt.key="$ENCRYPT_KEY" -Pcicd'
+				sh 'mvn clean verify -U -Dencrypt.key="$ENCRYPT_KEY" -Pexchange'
             }
         }
 		
@@ -137,7 +136,7 @@ pipeline {
             steps {
                 echo 'Building ...'			
                 
-				sh 'mvn clean verify -U -s $MVN_SET -Dencrypt.key="$ENCRYPT_KEY" -Pcicd'
+				sh 'mvn clean verify -U -Dencrypt.key="$ENCRYPT_KEY" -Pexchange'
             }
         }
 
@@ -232,8 +231,9 @@ pipeline {
 
 /*
 *Plugins installed:
-*-Simple Theme Plugin
-*-GitHub Integration Plugin
-*-Build Pipeline Plugin
+* Simple Theme Plugin
+* GitHub Integration Plugin
+* Build Pipeline Plugin
+* Config File Provider
 *
 */
