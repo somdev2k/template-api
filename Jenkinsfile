@@ -1,3 +1,5 @@
+def GB_ENV = 'UNKNOWN'
+
 pipeline {
 
     agent any
@@ -40,7 +42,7 @@ pipeline {
 						])
 				
 				script {
-					env.ENV = 'dev'
+					GB_ENV = sh (script: 'echo dev', returnStdout: true).trim()					
 					env.GIT_COMMIT = sh(returnStdout: true, script: 'git rev-parse HEAD')
 					env.GIT_COMMIT_MSG = sh (script: 'git log -1 --pretty=%B ${GIT_COMMIT}', returnStdout: true).trim()
 					env.GIT_AUTHOR_NAME = sh (script: 'git log -1 --pretty=%an ${GIT_COMMIT}', returnStdout: true).trim()
@@ -51,12 +53,12 @@ pipeline {
 				echo "================================================="
 				echo " Initiating Build"
 				echo "================================================="
-				echo " ENV : 				$ENV "
-				echo " GIT_COMMIT : 		$GIT_COMMIT "
-				echo " GIT_COMMIT_MSG : 	$GIT_COMMIT_MSG "
-				echo " GIT_AUTHOR_NAME : 	$GIT_AUTHOR_NAME "
-				echo " GIT_AUTHOR_EMAIL : 	$GIT_AUTHOR_EMAIL "
-				echo " BUILD_VER : 			$BUILD_VER "
+				echo "> ENV : $GB_ENV "
+				echo "> GIT_COMMIT : $GIT_COMMIT "
+				echo "> GIT_COMMIT_MSG : $GIT_COMMIT_MSG "
+				echo "> GIT_AUTHOR_NAME : $GIT_AUTHOR_NAME "
+				echo "> GIT_AUTHOR_EMAIL : $GIT_AUTHOR_EMAIL "
+				echo "> BUILD_VER : $BUILD_VER "
 				echo "================================================="
 				
 				sh 'ls -lart ./*'
@@ -77,12 +79,9 @@ pipeline {
             when {
                 expression {env.GIT_BRANCH == 'origin/develop'}
             }
-            environment {
-                ENV = 'dev'
-            }
             steps {
                 echo 'Deploying in DEV/SIT...'
-                sh 'mvn clean deploy -DmuleDeploy -DskipMunitTests -Dap.ca.client_id="$DEPLOY_CREDS_USR" -Dap.ca.client_secret="$DEPLOY_CREDS_PSW" -Dap.client_id="$PLATFORM_CREDS_USR" -Dap.client_secret="$PLATFORM_CREDS_PSW" -Dencrypt.key="$ENCRYPT_KEY" -Ddeployment.env="$ENV"'
+                sh 'mvn clean deploy -DmuleDeploy -DskipMunitTests -Dap.ca.client_id="$DEPLOY_CREDS_USR" -Dap.ca.client_secret="$DEPLOY_CREDS_PSW" -Dap.client_id="$PLATFORM_CREDS_USR" -Dap.client_secret="$PLATFORM_CREDS_PSW" -Dencrypt.key="$ENCRYPT_KEY" -Ddeployment.env="$GB_ENV"'
             }
         }
 
@@ -108,6 +107,7 @@ pipeline {
 						])
 				
 				script {
+					GB_ENV = sh (script: 'echo test', returnStdout: true).trim()
 					env.GIT_COMMIT = sh(returnStdout: true, script: 'git rev-parse HEAD')
 					env.GIT_COMMIT_MSG = sh (script: 'git log -1 --pretty=%B ${GIT_COMMIT}', returnStdout: true).trim()
 					env.GIT_AUTHOR_NAME = sh (script: 'git log -1 --pretty=%an ${GIT_COMMIT}', returnStdout: true).trim()
@@ -118,11 +118,13 @@ pipeline {
 				echo "================================================="
 				echo " Initiating Build"
 				echo "================================================="
-				echo "GIT_COMMIT = $GIT_COMMIT "
-				echo "GIT_COMMIT_MSG = $GIT_COMMIT_MSG "
-				echo "GIT_AUTHOR_NAME = $GIT_AUTHOR_NAME "
-				echo "GIT_AUTHOR_EMAIL = $GIT_AUTHOR_EMAIL "
-				echo "BUILD_VER = $BUILD_VER "
+				echo "> ENV : $GB_ENV "
+				echo "> GIT_COMMIT : $GIT_COMMIT "
+				echo "> GIT_COMMIT_MSG : $GIT_COMMIT_MSG "
+				echo "> GIT_AUTHOR_NAME : $GIT_AUTHOR_NAME "
+				echo "> GIT_AUTHOR_EMAIL : $GIT_AUTHOR_EMAIL "
+				echo "> BUILD_VER : $BUILD_VER "
+				echo "================================================="
 				
 				sh 'ls -lart ./*'
             }
@@ -142,21 +144,15 @@ pipeline {
             when {
                 expression {env.GIT_BRANCH == 'origin/main'}
             }
-            environment {
-                ENV = 'test'
-            }
             steps {
                 echo 'Deploying in TEST/UAT...'
-                sh 'mvn clean deploy -DmuleDeploy -DskipMunitTests -Dap.ca.client_id="$DEPLOY_CREDS_USR" -Dap.ca.client_secret="$DEPLOY_CREDS_PSW" -Dap.client_id="$PLATFORM_CREDS_USR" -Dap.client_secret="$PLATFORM_CREDS_PSW" -Dencrypt.key="$ENCRYPT_KEY" -Ddeployment.env="$ENV"'
+                sh 'mvn clean deploy -DmuleDeploy -DskipMunitTests -Dap.ca.client_id="$DEPLOY_CREDS_USR" -Dap.ca.client_secret="$DEPLOY_CREDS_PSW" -Dap.client_id="$PLATFORM_CREDS_USR" -Dap.client_secret="$PLATFORM_CREDS_PSW" -Dencrypt.key="$ENCRYPT_KEY" -Ddeployment.env="$GB_ENV"'
             }
         }
 
         stage('Regression Testing') {
             when {
                 expression {env.GIT_BRANCH == 'origin/main'}
-            }
-            environment {
-                ENV = 'test'
             }
             steps {
                 echo 'Running regression test...'
@@ -187,12 +183,11 @@ pipeline {
             when {
                 environment name: 'DEPLOY_PROD', value: "true"
             }
-            environment {
-                ENV = 'prod'
-            }
+            script {
+				GB_ENV = sh (script: 'echo prod', returnStdout: true).trim()	
+			}	
             steps {
                 echo 'Tagging main branch...'
-                
             }
         }
 
@@ -200,12 +195,9 @@ pipeline {
             when {
                 environment name: 'DEPLOY_PROD', value: "true"
             }
-            environment {
-                ENV = 'prod'
-            }
             steps {
                 echo 'Deploying in PROD...'
-                sh 'mvn mule:deploy -Dmule.artifact=./target/template-api-"$BUILD_VER"-mule-application.jar -Dap.ca.client_id="$DEPLOY_CREDS_USR" -Dap.ca.client_secret="$DEPLOY_CREDS_PSW" -Dap.client_id="$PLATFORM_CREDS_USR" -Dap.client_secret="$PLATFORM_CREDS_PSW" -Dencrypt.key="$ENCRYPT_KEY" -Ddeployment.env="$ENV" -Ddeployment.suffix='
+                sh 'mvn mule:deploy -Dmule.artifact=./target/template-api-"$BUILD_VER"-mule-application.jar -Dap.ca.client_id="$DEPLOY_CREDS_USR" -Dap.ca.client_secret="$DEPLOY_CREDS_PSW" -Dap.client_id="$PLATFORM_CREDS_USR" -Dap.client_secret="$PLATFORM_CREDS_PSW" -Dencrypt.key="$ENCRYPT_KEY" -Ddeployment.env="$GB_ENV" -Ddeployment.suffix='
             }
         }
 
@@ -216,7 +208,7 @@ pipeline {
             archiveArtifacts artifacts: 'target/*.jar, postman/*.html', fingerprint: true, onlyIfSuccessful: true
         }
 		success {
-          sh 'echo Release to "$ENV" complete!!'
+          sh 'echo Release to "$GB_ENV" complete!!'
         }
     }
 
