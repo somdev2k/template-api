@@ -13,7 +13,8 @@ pipeline {
         DEPLOY_CREDS = credentials('cloudhub-deploy-creds')
         PLATFORM_CREDS = credentials('anypoint-org-creds')
         ENCRYPT_KEY = credentials('app-encrypt-key')
-		GB_ENV = ""
+		MVN_SET = credentials('mule-maven-settings')
+		GB_ENV = "UNKNOWN"
     }
 
     stages {
@@ -45,7 +46,7 @@ pipeline {
 					env.GIT_COMMIT_MSG = sh (script: 'git log -1 --pretty=%B ${GIT_COMMIT}', returnStdout: true).trim()
 					env.GIT_AUTHOR_NAME = sh (script: 'git log -1 --pretty=%an ${GIT_COMMIT}', returnStdout: true).trim()
 					env.GIT_AUTHOR_EMAIL  = sh (script: 'git log -1 --pretty=%ae ${GIT_COMMIT}', returnStdout: true).trim()
-					env.BUILD_VER = sh (script: 'mvn help:evaluate -Dexpression=project.version -q -DforceStdout', returnStdout: true)
+					env.BUILD_VER = sh (script: 'mvn -s $MVN_SET help:effective-settings help:evaluate -Pexchange -Dexpression=project.version -q -DforceStdout', returnStdout: true)
 				}
 								
 				echo "================================================="
@@ -67,7 +68,7 @@ pipeline {
             steps {
                 echo 'Building ...'
                 
-				sh 'mvn clean verify -U -Dencrypt.key="$ENCRYPT_KEY" -Pexchange'
+				sh 'mvn clean verify -U -s $MVN_SET help:effective-settings -Pexchange -Dencrypt.key="$ENCRYPT_KEY"'
             }
         }
 		
@@ -81,7 +82,7 @@ pipeline {
             steps {
                 echo 'Deploying in DEV/SIT...'
                 
-				sh 'mvn clean deploy -DmuleDeploy -DskipMunitTests -Dap.ca.client_id="$DEPLOY_CREDS_USR" -Dap.ca.client_secret="$DEPLOY_CREDS_PSW" -Dap.client_id="$PLATFORM_CREDS_USR" -Dap.client_secret="$PLATFORM_CREDS_PSW" -Dencrypt.key="$ENCRYPT_KEY" -Ddeployment.env="$ENV"'
+				sh 'mvn clean deploy -DmuleDeploy -DskipMunitTests -s $MVN_SET help:effective-settings -Dap.ca.client_id="$DEPLOY_CREDS_USR" -Dap.ca.client_secret="$DEPLOY_CREDS_PSW" -Dap.client_id="$PLATFORM_CREDS_USR" -Dap.client_secret="$PLATFORM_CREDS_PSW" -Dencrypt.key="$ENCRYPT_KEY" -Ddeployment.env="$ENV"'
             }
         }
 		
@@ -113,7 +114,7 @@ pipeline {
 					env.GIT_COMMIT_MSG = sh (script: 'git log -1 --pretty=%B ${GIT_COMMIT}', returnStdout: true).trim()
 					env.GIT_AUTHOR_NAME = sh (script: 'git log -1 --pretty=%an ${GIT_COMMIT}', returnStdout: true).trim()
 					env.GIT_AUTHOR_EMAIL  = sh (script: 'git log -1 --pretty=%ae ${GIT_COMMIT}', returnStdout: true).trim()
-					env.BUILD_VER = sh (script: 'mvn help:evaluate -Dexpression=project.version -q -DforceStdout', returnStdout: true)
+					env.BUILD_VER = sh (script: 'mvn -s $MVN_SET help:effective-settings help:evaluate -Pexchange -Dexpression=project.version -q -DforceStdout', returnStdout: true)
 				}			
 				
 				echo "================================================="
@@ -136,7 +137,7 @@ pipeline {
             steps {
                 echo 'Building ...'			
                 
-				sh 'mvn clean verify -U -Dencrypt.key="$ENCRYPT_KEY" -Pexchange'
+				sh 'mvn clean verify -U -s $MVN_SET help:effective-settings -Pexchange -Dencrypt.key="$ENCRYPT_KEY"'
             }
         }
 
@@ -150,7 +151,7 @@ pipeline {
             steps {
                 echo 'Deploying in TEST/UAT...'
                 
-				sh 'mvn clean deploy -DmuleDeploy -DskipMunitTests -Dap.ca.client_id="$DEPLOY_CREDS_USR" -Dap.ca.client_secret="$DEPLOY_CREDS_PSW" -Dap.client_id="$PLATFORM_CREDS_USR" -Dap.client_secret="$PLATFORM_CREDS_PSW" -Dencrypt.key="$ENCRYPT_KEY" -Ddeployment.env="$ENV"'
+				sh 'mvn clean deploy -DmuleDeploy -DskipMunitTests -s $MVN_SET help:effective-settings -Dap.ca.client_id="$DEPLOY_CREDS_USR" -Dap.ca.client_secret="$DEPLOY_CREDS_PSW" -Dap.client_id="$PLATFORM_CREDS_USR" -Dap.client_secret="$PLATFORM_CREDS_PSW" -Dencrypt.key="$ENCRYPT_KEY" -Ddeployment.env="$ENV"'
             }
         }
 
