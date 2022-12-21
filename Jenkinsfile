@@ -81,7 +81,7 @@ pipeline {
                 expression {env.GIT_BRANCH == 'origin/develop'}
             }
 			environment {
-                ENV = $GB_ENV
+                ENV = "$GB_ENV"
             }
             steps {
                 echo 'Deploying in DEV/SIT...'
@@ -152,7 +152,7 @@ pipeline {
                 expression {env.GIT_BRANCH == 'origin/main'}
             }
 			environment {
-                ENV = $GB_ENV
+                ENV = "$GB_ENV"
             }
             steps {
                 echo 'Deploying in TEST/UAT...'
@@ -210,7 +210,7 @@ pipeline {
                 environment name: 'DEPLOY_PROD', value: "true"
             }
 			environment {
-                ENV = $GB_ENV
+                ENV = "$GB_ENV"
             }
             steps {
                 echo 'Deploying in PROD...'
