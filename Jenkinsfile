@@ -1,20 +1,26 @@
 pipeline {
 
     agent any
+	
+	options {
+		timestamps()
+	}
 
     environment {
         GIT_URL = 'https://github.com/somdev2k/template-api.git'
+		BUILD_VER = '1.0.0'
         REPO_NAME = env.GIT_URL.replace('.git', '').split('/').last()
         DEPLOY_CREDS = credentials('cloudhub-deploy-creds')
         PLATFORM_CREDS = credentials('anypoint-org-creds')
         ENCRYPT_KEY = credentials('app-encrypt-key')
         MVN_SET = credentials('mule-maven-settings')
+		GB_ENV = ""
     }
 
     stages {
 
         /* 
-		 *release pipeline for develop branch 
+		 *release chain for dev 
 		 */
 
         stage('Checkout - develop') {
@@ -23,6 +29,7 @@ pipeline {
             }
             steps {
 				echo 'Checkout develop...'
+				
 				checkout([$class: 'GitSCM', 
 						branches: [[name: "*/develop"]], 
 						doGenerateSubmoduleConfigurations: false, 
@@ -34,13 +41,25 @@ pipeline {
 						])
 				
 				script {
+					GB_ENV = 'dev'					
 					env.GIT_COMMIT = sh(returnStdout: true, script: 'git rev-parse HEAD')
 					env.GIT_COMMIT_MSG = sh (script: 'git log -1 --pretty=%B ${GIT_COMMIT}', returnStdout: true).trim()
 					env.GIT_AUTHOR_NAME = sh (script: 'git log -1 --pretty=%an ${GIT_COMMIT}', returnStdout: true).trim()
 					env.GIT_AUTHOR_EMAIL  = sh (script: 'git log -1 --pretty=%ae ${GIT_COMMIT}', returnStdout: true).trim()
+					env.BUILD_VER = sh (script: 'mvn help:evaluate -Dexpression=project.version -q -DforceStdout', returnStdout: true)
 				}
+								
+				echo "================================================="
+				echo " Initiating Build"
+				echo "================================================="
+				echo "> ENV : $GB_ENV "
+				echo "> GIT_COMMIT : $GIT_COMMIT "
+				echo "> GIT_COMMIT_MSG : $GIT_COMMIT_MSG "
+				echo "> GIT_AUTHOR_NAME : $GIT_AUTHOR_NAME "
+				echo "> GIT_AUTHOR_EMAIL : $GIT_AUTHOR_EMAIL "
+				echo "> BUILD_VER : $BUILD_VER "
+				echo "================================================="
 				
-				sh 'env | grep GIT_'
 				sh 'ls -lart ./*'
             }
         }
@@ -51,27 +70,28 @@ pipeline {
             }
             steps {
                 echo 'Building ...'
-                sh 'mvn clean verify -U -s $MVN_SET -Dencrypt.key="$ENCRYPT_KEY"'
+                
+				sh 'mvn clean verify -U -s $MVN_SET -Dencrypt.key="$ENCRYPT_KEY"'
             }
         }
-
+		
         stage('Deploying in DEV/SIT') {
             when {
                 expression {env.GIT_BRANCH == 'origin/develop'}
             }
-            environment {
+			environment {
                 ENV = 'dev'
             }
             steps {
                 echo 'Deploying in DEV/SIT...'
-
-                sh 'mvn clean deploy -DmuleDeploy -DskipMunitTests -Dap.ca.client_id="$DEPLOY_CREDS_USR" -Dap.ca.client_secret="$DEPLOY_CREDS_PSW" -Dap.client_id="$PLATFORM_CREDS_USR" -Dap.client_secret="$PLATFORM_CREDS_PSW" -Dencrypt.key="$ENCRYPT_KEY" -Ddeployment.env="$ENV"'
+                
+				sh 'mvn clean deploy -DmuleDeploy -DskipMunitTests -Dap.ca.client_id="$DEPLOY_CREDS_USR" -Dap.ca.client_secret="$DEPLOY_CREDS_PSW" -Dap.client_id="$PLATFORM_CREDS_USR" -Dap.client_secret="$PLATFORM_CREDS_PSW" -Dencrypt.key="$ENCRYPT_KEY" -Ddeployment.env="$ENV"'
             }
         }
-
+		
 
          /* 
-		 *release pipeline for main branch 
+		 *release chain for test 
 		 */
 
         stage('Checkout - main') {
@@ -80,6 +100,7 @@ pipeline {
             }
             steps {
 				echo 'Checkout main...'
+				
 				checkout([$class: 'GitSCM', 
 						branches: [[name: "*/main"]], 
 						doGenerateSubmoduleConfigurations: false, 
@@ -91,13 +112,25 @@ pipeline {
 						])
 				
 				script {
+					GB_ENV = 'test'	
 					env.GIT_COMMIT = sh(returnStdout: true, script: 'git rev-parse HEAD')
 					env.GIT_COMMIT_MSG = sh (script: 'git log -1 --pretty=%B ${GIT_COMMIT}', returnStdout: true).trim()
 					env.GIT_AUTHOR_NAME = sh (script: 'git log -1 --pretty=%an ${GIT_COMMIT}', returnStdout: true).trim()
 					env.GIT_AUTHOR_EMAIL  = sh (script: 'git log -1 --pretty=%ae ${GIT_COMMIT}', returnStdout: true).trim()
-				}
+					env.BUILD_VER = sh (script: 'mvn help:evaluate -Dexpression=project.version -q -DforceStdout', returnStdout: true)
+				}			
 				
-				sh 'env | grep GIT_'
+				echo "================================================="
+				echo " Initiating Build"
+				echo "================================================="
+				echo "> ENV : $GB_ENV "
+				echo "> GIT_COMMIT : $GIT_COMMIT "
+				echo "> GIT_COMMIT_MSG : $GIT_COMMIT_MSG "
+				echo "> GIT_AUTHOR_NAME : $GIT_AUTHOR_NAME "
+				echo "> GIT_AUTHOR_EMAIL : $GIT_AUTHOR_EMAIL "
+				echo "> BUILD_VER : $BUILD_VER "
+				echo "================================================="
+				
 				sh 'ls -lart ./*'
             }
         }
@@ -107,8 +140,9 @@ pipeline {
                 expression {env.GIT_BRANCH == 'origin/main'}
             }
             steps {
-                echo 'Building ...'
-                sh 'mvn clean verify -U -s $MVN_SET -Dencrypt.key="$ENCRYPT_KEY"'
+                echo 'Building ...'			
+                
+				sh 'mvn clean verify -U -s $MVN_SET -Dencrypt.key="$ENCRYPT_KEY"'
             }
         }
 
@@ -116,13 +150,13 @@ pipeline {
             when {
                 expression {env.GIT_BRANCH == 'origin/main'}
             }
-            environment {
+			environment {
                 ENV = 'test'
             }
             steps {
                 echo 'Deploying in TEST/UAT...'
-
-                sh 'mvn clean deploy -DmuleDeploy -DskipMunitTests -Dap.ca.client_id="$DEPLOY_CREDS_USR" -Dap.ca.client_secret="$DEPLOY_CREDS_PSW" -Dap.client_id="$PLATFORM_CREDS_USR" -Dap.client_secret="$PLATFORM_CREDS_PSW" -Dencrypt.key="$ENCRYPT_KEY" -Ddeployment.env="$ENV"'
+                
+				sh 'mvn clean deploy -DmuleDeploy -DskipMunitTests -Dap.ca.client_id="$DEPLOY_CREDS_USR" -Dap.ca.client_secret="$DEPLOY_CREDS_PSW" -Dap.client_id="$PLATFORM_CREDS_USR" -Dap.client_secret="$PLATFORM_CREDS_PSW" -Dencrypt.key="$ENCRYPT_KEY" -Ddeployment.env="$ENV"'
             }
         }
 
@@ -130,13 +164,10 @@ pipeline {
             when {
                 expression {env.GIT_BRANCH == 'origin/main'}
             }
-            environment {
-                ENV = 'test'
-            }
             steps {
                 echo 'Running regression test...'
-
-                sh 'newman run $PWD/postman/$REPO_NAME.postman_collection.json --disable-unicode'
+                
+				sh 'newman run $PWD/postman/$REPO_NAME.postman_collection.json --disable-unicode -r htmlextra --reporter-htmlextra-export $PWD/postman/ --reporter-htmlextra-darkTheme'
             }
         }
 
@@ -154,18 +185,36 @@ pipeline {
                 }
             }
         }
+		
+		/* 
+		 *release chain for production 
+		 */
+		 
+		stage('Tagging') {
+            when {
+                environment name: 'DEPLOY_PROD', value: "true"
+            } 
+            steps {
+                echo 'Tagging main branch...'
+				
+				script {
+					GB_ENV = 'prod'		
+				}	
+				
+            }
+        }
 
         stage('Deploying in PROD') {
             when {
                 environment name: 'DEPLOY_PROD', value: "true"
             }
-            environment {
+			environment {
                 ENV = 'prod'
             }
             steps {
                 echo 'Deploying in PROD...'
-
-                sh 'mvn mule:deploy -Dmule.artifact=./target/template-api-1.0.0-mule-application.jar -Dap.ca.client_id="$DEPLOY_CREDS_USR" -Dap.ca.client_secret="$DEPLOY_CREDS_PSW" -Dap.client_id="$PLATFORM_CREDS_USR" -Dap.client_secret="$PLATFORM_CREDS_PSW" -Dencrypt.key="$ENCRYPT_KEY" -Ddeployment.env="$ENV" -Ddeployment.suffix='
+                
+				sh 'mvn mule:deploy -Dmule.artifact=./target/template-api-"$BUILD_VER"-mule-application.jar -Dap.ca.client_id="$DEPLOY_CREDS_USR" -Dap.ca.client_secret="$DEPLOY_CREDS_PSW" -Dap.client_id="$PLATFORM_CREDS_USR" -Dap.client_secret="$PLATFORM_CREDS_PSW" -Dencrypt.key="$ENCRYPT_KEY" -Ddeployment.env="$ENV" -Ddeployment.suffix='
             }
         }
 
@@ -175,8 +224,8 @@ pipeline {
         always {
             archiveArtifacts artifacts: 'target/*.jar, postman/*.html', fingerprint: true, onlyIfSuccessful: true
         }
-		success {
-          sh 'echo Release complete!'
+		success {	
+			echo "Release to '${GB_ENV}' complete"
         }
     }
 
