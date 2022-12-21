@@ -53,13 +53,10 @@ pipeline {
 				echo " Initiating Build"
 				echo "================================================="
 				echo "> ENV : $GB_ENV "
-				echo "> GIT_COMMIT : $GIT_COMMIT "
-				echo "> GIT_COMMIT_MSG : $GIT_COMMIT_MSG "
-				echo "> GIT_AUTHOR_NAME : $GIT_AUTHOR_NAME "
-				echo "> GIT_AUTHOR_EMAIL : $GIT_AUTHOR_EMAIL "
 				echo "> BUILD_VER : $BUILD_VER "
 				echo "================================================="
 				
+				sh 'env | grep GIT_'
 				sh 'ls -lart ./*'
             }
         }
@@ -124,14 +121,12 @@ pipeline {
 				echo " Initiating Build"
 				echo "================================================="
 				echo "> ENV : $GB_ENV "
-				echo "> GIT_COMMIT : $GIT_COMMIT "
-				echo "> GIT_COMMIT_MSG : $GIT_COMMIT_MSG "
-				echo "> GIT_AUTHOR_NAME : $GIT_AUTHOR_NAME "
-				echo "> GIT_AUTHOR_EMAIL : $GIT_AUTHOR_EMAIL "
 				echo "> BUILD_VER : $BUILD_VER "
 				echo "================================================="
 				
+				sh 'env | grep GIT_'
 				sh 'ls -lart ./*'
+				
             }
         }
 
