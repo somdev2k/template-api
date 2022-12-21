@@ -1,5 +1,3 @@
-def GB_ENV = ''
-
 pipeline {
 
     agent any
@@ -16,6 +14,7 @@ pipeline {
         PLATFORM_CREDS = credentials('anypoint-org-creds')
         ENCRYPT_KEY = credentials('app-encrypt-key')
         MVN_SET = credentials('mule-maven-settings')
+		GB_ENV = ""
     }
 
     stages {
@@ -42,7 +41,7 @@ pipeline {
 						])
 				
 				script {
-					GB_ENV = sh (script: 'echo dev', returnStdout: true).trim()					
+					GB_ENV = 'dev'					
 					env.GIT_COMMIT = sh(returnStdout: true, script: 'git rev-parse HEAD')
 					env.GIT_COMMIT_MSG = sh (script: 'git log -1 --pretty=%B ${GIT_COMMIT}', returnStdout: true).trim()
 					env.GIT_AUTHOR_NAME = sh (script: 'git log -1 --pretty=%an ${GIT_COMMIT}', returnStdout: true).trim()
@@ -113,7 +112,7 @@ pipeline {
 						])
 				
 				script {
-					GB_ENV = sh (script: 'echo test', returnStdout: true).trim()
+					GB_ENV = 'test'	
 					env.GIT_COMMIT = sh(returnStdout: true, script: 'git rev-parse HEAD')
 					env.GIT_COMMIT_MSG = sh (script: 'git log -1 --pretty=%B ${GIT_COMMIT}', returnStdout: true).trim()
 					env.GIT_AUTHOR_NAME = sh (script: 'git log -1 --pretty=%an ${GIT_COMMIT}', returnStdout: true).trim()
@@ -199,7 +198,7 @@ pipeline {
                 echo 'Tagging main branch...'
 				
 				script {
-					GB_ENV = sh (script: 'echo prod', returnStdout: true).trim()	
+					GB_ENV = 'prod'		
 				}	
 				
             }
@@ -225,8 +224,8 @@ pipeline {
         always {
             archiveArtifacts artifacts: 'target/*.jar, postman/*.html', fingerprint: true, onlyIfSuccessful: true
         }
-		success {
-          sh 'echo Release to "$GB_ENV" complete!!'
+		success {	
+			echo "Release to '${GB_ENV}' complete"
         }
     }
 
