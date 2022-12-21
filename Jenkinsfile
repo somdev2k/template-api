@@ -75,7 +75,7 @@ pipeline {
 				sh 'mvn clean verify -U -s $MVN_SET -Dencrypt.key="$ENCRYPT_KEY"'
             }
         }
-		/*
+		
         stage('Deploying in DEV/SIT') {
             when {
                 expression {env.GIT_BRANCH == 'origin/develop'}
@@ -89,7 +89,7 @@ pipeline {
 				sh 'mvn clean deploy -DmuleDeploy -DskipMunitTests -Dap.ca.client_id="$DEPLOY_CREDS_USR" -Dap.ca.client_secret="$DEPLOY_CREDS_PSW" -Dap.client_id="$PLATFORM_CREDS_USR" -Dap.client_secret="$PLATFORM_CREDS_PSW" -Dencrypt.key="$ENCRYPT_KEY" -Ddeployment.env="$ENV"'
             }
         }
-		*/
+		
 
          /* 
 		 *release chain for main branch 
