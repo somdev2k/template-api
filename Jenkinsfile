@@ -19,7 +19,7 @@ pipeline {
     stages {
 
         /* 
-		 *release pipeline for develop branch 
+		 *release chain for develop branch 
 		 */
 
         stage('Checkout - develop') {
@@ -84,7 +84,7 @@ pipeline {
 
 
          /* 
-		 *release pipeline for main branch 
+		 *release chain for main branch 
 		 */
 
         stage('Checkout - main') {
@@ -174,6 +174,23 @@ pipeline {
                 }
             }
         }
+		
+		/* 
+		 *release chain for main production 
+		 */
+		 
+		stage('Tagging') {
+            when {
+                environment name: 'DEPLOY_PROD', value: "true"
+            }
+            environment {
+                ENV = 'prod'
+            }
+            steps {
+                echo 'Tagging main branch...'
+                
+            }
+        }
 
         stage('Deploying in PROD') {
             when {
@@ -195,7 +212,7 @@ pipeline {
             archiveArtifacts artifacts: 'target/*.jar, postman/*.html', fingerprint: true, onlyIfSuccessful: true
         }
 		success {
-          sh 'echo Release complete!!'
+          sh 'echo Release to "$ENV" complete!!'
         }
     }
 
