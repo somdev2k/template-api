@@ -136,7 +136,7 @@ pipeline {
             steps {
                 echo 'Building ...'			
                 
-				sh 'mvn clean verify -s settings.xml -U -Dencrypt.key="$ENCRYPT_KEY" -Pexchange'
+				sh 'mvn clean verify -U -Dencrypt.key="$ENCRYPT_KEY" -Pexchange'
             }
         }
 
