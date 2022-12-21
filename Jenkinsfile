@@ -1,4 +1,4 @@
-def GB_ENV = 'UNKNOWN'
+def GB_ENV = ''
 
 pipeline {
 
@@ -21,7 +21,7 @@ pipeline {
     stages {
 
         /* 
-		 *release chain for develop branch 
+		 *release chain for dev 
 		 */
 
         stage('Checkout - develop') {
@@ -81,7 +81,7 @@ pipeline {
                 expression {env.GIT_BRANCH == 'origin/develop'}
             }
 			environment {
-                ENV = '$GB_ENV'
+                ENV = 'dev'
             }
             steps {
                 echo 'Deploying in DEV/SIT...'
@@ -92,7 +92,7 @@ pipeline {
 		
 
          /* 
-		 *release chain for main branch 
+		 *release chain for test 
 		 */
 
         stage('Checkout - main') {
@@ -152,7 +152,7 @@ pipeline {
                 expression {env.GIT_BRANCH == 'origin/main'}
             }
 			environment {
-                ENV = '$GB_ENV'
+                ENV = 'test'
             }
             steps {
                 echo 'Deploying in TEST/UAT...'
@@ -188,7 +188,7 @@ pipeline {
         }
 		
 		/* 
-		 *release chain for main production 
+		 *release chain for production 
 		 */
 		 
 		stage('Tagging') {
@@ -210,7 +210,7 @@ pipeline {
                 environment name: 'DEPLOY_PROD', value: "true"
             }
 			environment {
-                ENV = '$GB_ENV'
+                ENV = 'prod'
             }
             steps {
                 echo 'Deploying in PROD...'
@@ -226,7 +226,7 @@ pipeline {
             archiveArtifacts artifacts: 'target/*.jar, postman/*.html', fingerprint: true, onlyIfSuccessful: true
         }
 		success {
-          sh 'echo Release to "$ENV" complete!!'
+          sh 'echo Release to "$GB_ENV" complete!!'
         }
     }
 
