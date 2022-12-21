@@ -226,7 +226,7 @@ pipeline {
             archiveArtifacts artifacts: 'target/*.jar, postman/*.html', fingerprint: true, onlyIfSuccessful: true
         }
 		success {
-          sh 'echo Release to "$GB_ENV" complete!!'
+          sh 'echo Release complete!!'
         }
     }
 
