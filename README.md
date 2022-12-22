@@ -23,7 +23,7 @@ Please ensure that your settings.xml has been configured with the correct Exchan
 ## Local Install
 For local install, give any groupId. Issue `mvn clean install`
 
-## Pre requisite
+## Pre Requisite
 
 Import the API Template from Exchange and into Studio and start building the business logic for your API
 

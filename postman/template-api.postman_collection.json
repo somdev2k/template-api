@@ -17,7 +17,7 @@
 							"});\r",
 							"pm.test(\"Your test name\", function () {\r",
 							"    var jsonData = pm.response.json();\r",
-							"    pm.expect(jsonData.message).to.eql('Hello World!!');\r",
+							"    pm.expect(jsonData.message).to.eql('Hello World - Test3');\r",
 							"});"
 						],
 						"type": "text/javascript"
