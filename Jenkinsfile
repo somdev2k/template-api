@@ -217,7 +217,7 @@ pipeline {
 	
 	post {
         always {
-            archiveArtifacts artifacts: 'target/*.jar, fingerprint: true, onlyIfSuccessful: true
+            archiveArtifacts artifacts: 'target/*.jar', fingerprint: true, onlyIfSuccessful: true
         }
 		success {	
 			echo "Release to '${GB_ENV}' complete"
