@@ -2,5 +2,5 @@
 ---
 config::common::main({}) ++ {
     env: "prod",
-    url: "https://tngaa-template-api.us-e1.cloudhub.io"
+    url: "https://iocl-nfr-template-api.us-e2.cloudhub.io"
 }

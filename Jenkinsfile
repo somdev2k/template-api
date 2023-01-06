@@ -162,7 +162,7 @@ pipeline {
             steps {
                 echo 'Running regression test...'
                 
-				sh 'newman run $PWD/postman/$REPO_NAME.postman_collection.json --disable-unicode -r htmlextra --reporter-htmlextra-export $PWD/postman/ --reporter-htmlextra-darkTheme'
+				sh 'newman run $PWD/postman/$REPO_NAME.postman_collection.json --disable-unicode'
             }
         }
 
@@ -217,7 +217,7 @@ pipeline {
 	
 	post {
         always {
-            archiveArtifacts artifacts: 'target/*.jar, postman/*.html', fingerprint: true, onlyIfSuccessful: true
+            archiveArtifacts artifacts: 'target/*.jar, fingerprint: true, onlyIfSuccessful: true
         }
 		success {	
 			echo "Release to '${GB_ENV}' complete"
@@ -231,10 +231,10 @@ pipeline {
 }
 
 /*
-*Plugins installed:
-* Simple Theme Plugin
-* GitHub Integration Plugin
-* Build Pipeline Plugin
-* Config File Provider
+*Plugins required:
+*-Simple Theme Plugin
+*-GitHub Integration Plugin
+*-Build Pipeline Plugin
+*-Config File Provider
 *
 */
