@@ -2,5 +2,5 @@
 ---
 config::common::main({}) ++ {
     env: "test",
-    url: "https://tngaa-template-api-test.us-e1.cloudhub.io"
+    url: "https://iocl-nfr-template-api-test.us-e2.cloudhub.io"
 }
